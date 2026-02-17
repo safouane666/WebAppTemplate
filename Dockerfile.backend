@@ -1,0 +1,40 @@
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+# Copy root package files
+COPY package*.json ./
+
+# Copy shared package
+COPY packages/shared ./packages/shared
+
+# Copy backend package
+COPY packages/backend ./packages/backend
+
+# Install dependencies and build
+RUN npm ci && \
+    npm run build --workspace=@webapp-template/shared && \
+    npm run build --workspace=@webapp-template/backend
+
+# Production stage
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+COPY packages/shared/package.json ./packages/shared/
+COPY packages/backend/package.json ./packages/backend/
+
+# Copy built files
+COPY --from=builder /app/packages/shared/dist ./packages/shared/dist
+COPY --from=builder /app/packages/backend/dist ./packages/backend/dist
+
+# Install production dependencies only
+RUN npm ci --omit=dev && \
+    npm ci --omit=dev --workspace=@webapp-template/shared && \
+    npm ci --omit=dev --workspace=@webapp-template/backend
+
+EXPOSE 3001
+
+CMD ["npm", "run", "start:prod", "--workspace=@webapp-template/backend"]

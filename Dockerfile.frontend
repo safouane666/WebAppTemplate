@@ -1,0 +1,45 @@
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+# Copy root package files
+COPY package*.json ./
+
+# Copy shared package
+COPY packages/shared ./packages/shared
+
+# Copy frontend package
+COPY packages/frontend ./packages/frontend
+
+# Install dependencies and build
+RUN npm ci && \
+    npm run build --workspace=@webapp-template/shared && \
+    npm run build --workspace=@webapp-template/frontend
+
+# Production stage
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+COPY packages/shared/package.json ./packages/shared/
+COPY packages/frontend/package.json ./packages/frontend/
+COPY packages/frontend/next.config.js ./packages/frontend/
+
+# Copy built files
+COPY --from=builder /app/packages/shared/dist ./packages/shared/dist
+COPY --from=builder /app/packages/frontend/.next ./packages/frontend/.next
+COPY --from=builder /app/packages/frontend/public ./packages/frontend/public
+
+# Install production dependencies only
+RUN npm ci --omit=dev && \
+    npm ci --omit=dev --workspace=@webapp-template/shared && \
+    npm ci --omit=dev --workspace=@webapp-template/frontend
+
+EXPOSE 3000
+
+ENV NODE_ENV=production
+ENV PORT=3000
+
+CMD ["npm", "run", "start", "--workspace=@webapp-template/frontend"]
