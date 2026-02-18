@@ -6,16 +6,49 @@ Get up and running in 5 minutes!
 
 - Node.js 18+ installed
 - npm 9+ installed
+- Git
 
-## Setup Steps
+## Setup Options
 
-### 1. Install Dependencies
+### Option 1: Automated Setup (Recommended) ⚡
+
+Use the setup script for the fastest setup:
+
+**Linux/macOS:**
+
+```bash
+git clone <your-repo-url>
+cd WebAppTemplate
+chmod +x scripts/setup.sh
+./scripts/setup.sh
+```
+
+**Windows (PowerShell):**
+
+```bash
+git clone <your-repo-url>
+cd WebAppTemplate
+.\scripts\setup.ps1
+```
+
+The script automatically:
+
+- ✅ Installs all dependencies
+- ✅ Creates `.env` files from templates
+- ✅ Sets up Husky Git hooks
+- ✅ Shows you next steps
+
+### Option 2: Manual Setup 🔧
+
+If you prefer manual setup:
+
+#### 1. Install Dependencies
 
 ```bash
 npm install
 ```
 
-### 2. Set Up Environment Variables
+#### 2. Set Up Environment Variables
 
 ```bash
 # Backend
@@ -23,11 +56,22 @@ cp packages/backend/.env.example packages/backend/.env
 
 # Frontend
 cp packages/frontend/.env.example packages/frontend/.env
+
+# Root (optional)
+cp .env.example .env
 ```
 
 Edit the `.env` files if needed (defaults should work for local development).
 
-### 3. Start Development Servers
+#### 3. Initialize Husky (for Git hooks)
+
+```bash
+npx husky install
+```
+
+## Development
+
+### Start Development Servers
 
 ```bash
 npm run dev
@@ -37,12 +81,14 @@ This starts:
 
 - **Backend**: http://localhost:3001
 - **Frontend**: http://localhost:3000
+- **API Documentation**: http://localhost:3001/api-docs (Swagger UI)
 
-### 4. Verify Installation
+### Verify Installation
 
 - Open http://localhost:3000 in your browser
 - Check backend health: http://localhost:3001/health
 - Test API: http://localhost:3001/api
+- Explore API docs: http://localhost:3001/api-docs
 
 ## Next Steps
 

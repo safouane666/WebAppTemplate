@@ -1,6 +1,12 @@
 # WebApp Template
 
-Ultimate TypeScript web application template with Express.js backend and Next.js frontend. Built with modern best practices, production-ready architecture, and deployment configurations.
+[![Template](https://img.shields.io/badge/GitHub-Template-blue)](https://github.com/safouane666/WebAppTemplate/generate)
+
+> **A production-ready TypeScript web application template** with Express.js backend and Next.js frontend. Built with modern best practices, production-ready architecture, and deployment configurations.
+
+**Made by [SAFOUANE REGAIEG](https://github.com/safouane666)**
+
+This is a **GitHub template repository** - click the **"Use this template"** button above or visit the repository to create your own project based on this template.
 
 ## 🚀 Features
 
@@ -8,6 +14,7 @@ Ultimate TypeScript web application template with Express.js backend and Next.js
 - **TypeScript**: Full TypeScript support across all packages
 - **Backend**: Express.js with TypeScript, middleware, error handling, and security best practices
 - **API Documentation**: Swagger/OpenAPI documentation with interactive UI
+- **Database Support**: Optional configurations for PostgreSQL, MongoDB, and Redis (can be enabled or ignored)
 - **Frontend**: Next.js 14 with App Router, Tailwind CSS, and modern React patterns
 - **Shared Package**: Common types, utilities, and constants shared between frontend and backend
 - **Development Tools**: ESLint, Prettier, Husky, lint-staged, and Nodemon for hot reload
@@ -23,8 +30,15 @@ webapp-template/
 │   ├── backend/          # Express.js backend
 │   │   ├── src/
 │   │   │   ├── config/    # Configuration files
+│   │   │   │   ├── index.ts        # Main app configuration
+│   │   │   │   ├── swagger.ts      # Swagger/OpenAPI config
+│   │   │   │   ├── database.ts     # Database config (PostgreSQL, MongoDB, Redis)
+│   │   │   │   └── database/       # Database connection placeholders (optional)
+│   │   │   │       ├── postgres.ts # PostgreSQL connection setup
+│   │   │   │       ├── mongodb.ts  # MongoDB connection setup
+│   │   │   │       └── redis.ts    # Redis connection setup
 │   │   │   ├── middleware/ # Express middleware
-│   │   │   ├── routes/    # API routes
+│   │   │   ├── routes/    # API routes with Swagger docs
 │   │   │   ├── controllers/ # Route controllers
 │   │   │   ├── services/  # Business logic
 │   │   │   ├── utils/     # Utility functions
@@ -49,6 +63,9 @@ webapp-template/
 │
 ├── .github/
 │   └── workflows/         # CI/CD workflows
+├── scripts/               # Setup scripts
+│   ├── setup.sh          # Linux/macOS setup script
+│   └── setup.ps1         # Windows PowerShell setup script
 ├── Dockerfile             # Multi-stage Dockerfile
 ├── docker-compose.yml     # Docker Compose configuration
 └── package.json           # Root package.json with workspaces
@@ -60,23 +77,54 @@ webapp-template/
 
 - Node.js >= 18.0.0
 - npm >= 9.0.0
+- Git
 
-### Installation
+### Quick Setup (Recommended)
 
-1. Clone the repository:
+Use the automated setup script for the fastest setup:
+
+**Linux/macOS:**
+
+```bash
+git clone <your-repo-url>
+cd WebAppTemplate
+chmod +x scripts/setup.sh
+./scripts/setup.sh
+```
+
+**Windows (PowerShell):**
+
+```bash
+git clone <your-repo-url>
+cd WebAppTemplate
+.\scripts\setup.ps1
+```
+
+The setup script will:
+
+- ✅ Install all dependencies (root and workspace packages)
+- ✅ Create `.env` files from `.env.example` templates (only if they don't exist)
+- ✅ Initialize Husky Git hooks
+- ✅ Display next steps
+
+### Manual Setup
+
+If you prefer to set up manually:
+
+1. **Clone the repository:**
 
 ```bash
 git clone <your-repo-url>
 cd WebAppTemplate
 ```
 
-2. Install dependencies:
+2. **Install dependencies:**
 
 ```bash
 npm install
 ```
 
-3. Set up environment variables:
+3. **Set up environment variables:**
 
 ```bash
 # Copy example environment files
@@ -85,7 +133,13 @@ cp packages/frontend/.env.example packages/frontend/.env
 cp .env.example .env
 ```
 
-4. Update environment variables in `.env` files with your configuration.
+4. **Initialize Husky (for Git hooks):**
+
+```bash
+npx husky install
+```
+
+5. **Update environment variables** in `.env` files with your configuration (optional - defaults work for local development).
 
 ### Development
 
@@ -158,6 +212,57 @@ Stop services:
 docker-compose down
 ```
 
+#### Database Services (Optional)
+
+The `docker-compose.yml` file includes **commented-out** database services that are production-ready:
+
+- **PostgreSQL** - Production-ready PostgreSQL 16 with data persistence
+- **MongoDB** - MongoDB 7 with authentication and data persistence
+- **Redis** - Redis 7 with optional password protection and persistence
+
+**To enable databases:**
+
+1. **Uncomment the database service(s)** you want in `docker-compose.yml`
+2. **Uncomment the corresponding volume(s)** at the bottom of the file
+3. **Update your `.env` file** with database connection details:
+
+   ```env
+   # PostgreSQL
+   POSTGRES_HOST=postgres
+   POSTGRES_PORT=5432
+   POSTGRES_DB=webapp_db
+   POSTGRES_USER=postgres
+   POSTGRES_PASSWORD=your_secure_password
+
+   # MongoDB
+   MONGO_HOST=mongodb
+   MONGO_PORT=27017
+   MONGO_DB=webapp_db
+   MONGO_USER=admin
+   MONGO_PASSWORD=your_secure_password
+   MONGO_AUTH_SOURCE=admin
+
+   # Redis
+   REDIS_HOST=redis
+   REDIS_PORT=6379
+   REDIS_PASSWORD=your_secure_password
+   ```
+
+4. **Uncomment the `depends_on`** section in the backend service
+5. **Restart services:**
+   ```bash
+   docker-compose down
+   docker-compose up -d
+   ```
+
+**Note:** Database services include:
+
+- ✅ Health checks for reliability
+- ✅ Data persistence with Docker volumes
+- ✅ Production-ready configurations
+- ✅ Network isolation
+- ✅ Automatic restart policies
+
 ### Individual Docker Images
 
 Build backend:
@@ -219,6 +324,94 @@ NEXT_PUBLIC_API_URL=http://localhost:3001
 NODE_ENV=development
 ```
 
+#### Database Configuration (Optional)
+
+The template includes **optional** database configurations for PostgreSQL, MongoDB, and Redis. You can use one, all, or none - they're completely optional.
+
+**PostgreSQL:**
+
+```env
+# Option 1: Connection string
+DATABASE_URL=postgresql://user:password@localhost:5432/dbname
+
+# Option 2: Individual parameters
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
+POSTGRES_DB=webapp_db
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=your_password
+POSTGRES_SSL=false
+```
+
+**MongoDB:**
+
+```env
+# Option 1: Connection string
+MONGODB_URI=mongodb://user:password@localhost:27017/webapp_db?authSource=admin
+
+# Option 2: Individual parameters
+MONGO_HOST=localhost
+MONGO_PORT=27017
+MONGO_DB=webapp_db
+MONGO_USER=your_user
+MONGO_PASSWORD=your_password
+MONGO_AUTH_SOURCE=admin
+```
+
+**Redis:**
+
+```env
+# Option 1: Connection string
+REDIS_URL=redis://:password@localhost:6379/0
+
+# Option 2: Individual parameters
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_PASSWORD=
+REDIS_DB=0
+```
+
+**Using Databases:**
+
+1. **Install the required package:**
+
+   ```bash
+   # For PostgreSQL
+   npm install pg
+   npm install --save-dev @types/pg
+
+   # For MongoDB (using mongoose)
+   npm install mongoose
+
+   # For Redis
+   npm install redis
+   # or
+   npm install ioredis
+   ```
+
+2. **Uncomment the connection code** in the respective file:
+   - `packages/backend/src/config/database/postgres.ts` for PostgreSQL
+   - `packages/backend/src/config/database/mongodb.ts` for MongoDB
+   - `packages/backend/src/config/database/redis.ts` for Redis
+
+3. **Import and use** in your code:
+
+   ```typescript
+   // PostgreSQL example
+   import { createPostgresConnection } from '@/config/database/postgres';
+   const client = await createPostgresConnection();
+
+   // MongoDB example
+   import { connectMongoDB } from '@/config/database/mongodb';
+   await connectMongoDB();
+
+   // Redis example
+   import { getRedisClient } from '@/config/database/redis';
+   const client = await getRedisClient();
+   ```
+
+**Note:** If you don't need databases, simply leave the environment variables commented and ignore the database configuration files. The application will work perfectly without them.
+
 ### TypeScript Configuration
 
 Each package has its own `tsconfig.json` that extends the root configuration. Path aliases are configured for cleaner imports.
@@ -229,30 +422,117 @@ Each package has its own `tsconfig.json` that extends the root configuration. Pa
 - Prettier configuration is in root `.prettierrc.json`
 - Code is automatically formatted on commit (via Husky + lint-staged)
 
-### API Documentation (Swagger)
+### API Documentation (Swagger/OpenAPI)
 
-The backend includes Swagger/OpenAPI documentation that is automatically generated from JSDoc comments in route files.
+The backend includes **interactive Swagger/OpenAPI documentation** that is automatically generated from JSDoc comments in your route files. This provides a beautiful, interactive UI to explore and test your API endpoints.
 
-- **Access**: `http://localhost:3001/api-docs` (development only)
-- **Documentation**: Add Swagger annotations directly in route files using JSDoc comments
-- **Example**: See `packages/backend/src/routes/health.ts` for an example
+#### Accessing the Documentation
 
-To document a new endpoint, add Swagger annotations above your route handler:
+Once your backend server is running in development mode:
+
+- **Swagger UI**: `http://localhost:3001/api-docs`
+- **Available only in development** (disabled in production for security)
+
+#### How It Works
+
+1. **Automatic Generation**: Swagger scans your route files (`packages/backend/src/routes/**/*.ts`) for JSDoc comments with `@swagger` annotations
+2. **Interactive UI**: The Swagger UI provides:
+   - Complete API endpoint listing
+   - Request/response schemas
+   - Try-it-out functionality (test endpoints directly from the browser)
+   - Authentication support (if configured)
+   - Example requests and responses
+
+#### Documenting Your Endpoints
+
+Add Swagger annotations directly above your route handlers using JSDoc comments. Here's a complete example:
 
 ```typescript
 /**
  * @swagger
- * /api/your-endpoint:
+ * /api/users:
  *   get:
- *     summary: Your endpoint summary
- *     description: Detailed description
- *     tags: [API]
+ *     summary: Get all users
+ *     description: Retrieves a list of all users in the system
+ *     tags: [Users]
  *     responses:
  *       200:
- *         description: Success response
+ *         description: Successful response with user list
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                       name:
+ *                         type: string
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
-router.get('/your-endpoint', handler);
+router.get('/users', getUsersController);
 ```
+
+#### Example Implementation
+
+See `packages/backend/src/routes/health.ts` for a real-world example with:
+
+- Endpoint documentation
+- Response schemas
+- Example responses
+- Error handling documentation
+
+#### Swagger Configuration
+
+The Swagger configuration is located in `packages/backend/src/config/swagger.ts` and includes:
+
+- API metadata (title, version, description)
+- Server URLs (development and production)
+- Reusable schemas (Error, HealthCheck, etc.)
+- Security schemes (JWT bearer token support)
+- Tags for organizing endpoints
+
+#### Best Practices
+
+- **Document all endpoints**: Keep your API documentation up-to-date
+- **Use tags**: Organize endpoints by feature (e.g., `[Users]`, `[Auth]`, `[Products]`)
+- **Define schemas**: Use `$ref` to reference reusable schemas from `swagger.ts`
+- **Include examples**: Provide example requests/responses for better developer experience
+- **Document errors**: Include all possible error responses (400, 401, 404, 500, etc.)
+
+#### Adding Authentication
+
+To document endpoints that require authentication:
+
+```typescript
+/**
+ * @swagger
+ * /api/protected:
+ *   get:
+ *     summary: Protected endpoint
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Success
+ *       401:
+ *         description: Unauthorized
+ */
+```
+
+The `bearerAuth` security scheme is already configured in `swagger.ts`.
 
 ## 🏗️ Architecture
 
@@ -263,7 +543,10 @@ router.get('/your-endpoint', handler);
 - **Services**: Business logic and data operations
 - **Middleware**: Request processing (auth, validation, error handling)
 - **Config**: Environment and application configuration
+  - **Database Config**: Optional support for PostgreSQL, MongoDB, and Redis
+  - **Swagger Config**: API documentation configuration
 - **Hot Reload**: Nodemon automatically restarts server on file changes
+- **Database Support**: Optional database connection placeholders (can be enabled or ignored)
 
 ### Frontend Architecture
 
@@ -350,10 +633,28 @@ GitHub Actions workflows are configured for:
 
 MIT License - feel free to use this template for your projects!
 
+## 👤 Author
+
+**SAFOUANE REGAIEG**
+
+- GitHub: [@safouane666](https://github.com/safouane666)
+
 ## 🆘 Support
 
 For issues and questions, please open an issue on GitHub.
 
+## 📝 Using This Template
+
+This is a GitHub template repository. To create a new project based on this template:
+
+1. Click the **"Use this template"** button on GitHub
+2. Create a new repository from this template
+3. Clone your new repository
+4. Run the setup script (see [Getting Started](#-getting-started) above)
+5. Start building your application!
+
 ---
 
-Built with ❤️ using TypeScript, Express.js, and Next.js
+**Made with ❤️ by SAFOUANE REGAIEG**
+
+Built using TypeScript, Express.js, Next.js, and modern web development best practices.

@@ -34,3 +34,6 @@ export const config: Config = {
     prefix: '/api',
   },
 };
+
+// Re-export database configurations for convenience
+export * from './database';
