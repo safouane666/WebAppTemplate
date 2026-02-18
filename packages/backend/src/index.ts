@@ -75,13 +75,39 @@ app.use(errorHandler);
 const PORT = config.port || 3001;
 
 // Start server (this file is the entry point)
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📦 Environment: ${config.env}`);
-  console.log(`🌐 API: http://localhost:${PORT}/api`);
-  if (config.env !== 'production') {
-    console.log(`📚 API Documentation: http://localhost:${PORT}/api-docs`);
+async function startServer() {
+  // Connect to MongoDB or any type of DB on server start
+  /*
+  try {
+    await connectMongoDB();
+    console.log('MongoDB connected successfully');
+  } catch (error) {
+    console.error('Failed to connect to MongoDB:', error);
+    process.exit(1);
   }
+  */
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+    console.log(`📦 Environment: ${config.env}`);
+    console.log(`🌐 API: http://localhost:${PORT}/api`);
+    if (config.env !== 'production') {
+      console.log(`📚 API Documentation: http://localhost:${PORT}/api-docs`);
+    }
+  });
+}
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received, shutting down gracefully');
+  process.exit(0);
 });
+
+process.on('SIGINT', () => {
+  console.log('SIGINT received, shutting down gracefully');
+  process.exit(0);
+});
+
+// Start server (this file is the entry point)
+startServer();
 
 export default app;
