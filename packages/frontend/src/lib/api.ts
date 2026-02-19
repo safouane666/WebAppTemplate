@@ -14,10 +14,12 @@ export const apiClient = axios.create({
 apiClient.interceptors.request.use(
   config => {
     // Add auth token if available
-    // const token = localStorage.getItem('token');
-    // if (token) {
-    //   config.headers.Authorization = `Bearer ${token}`;
-    // }
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('token');
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    }
     return config;
   },
   error => {
@@ -31,9 +33,15 @@ apiClient.interceptors.response.use(
   error => {
     // Handle common errors
     if (error.response?.status === 401) {
-      // Handle unauthorized
-      // localStorage.removeItem('token');
-      // window.location.href = '/login';
+      // Handle unauthorized - clear tokens
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('token');
+        localStorage.removeItem('refreshToken');
+        // Redirect to login if not already on auth pages
+        if (!window.location.pathname.startsWith('/auth')) {
+          window.location.href = '/auth/login';
+        }
+      }
     }
     return Promise.reject(error);
   }

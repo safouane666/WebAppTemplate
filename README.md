@@ -15,7 +15,7 @@ This is a **GitHub template repository** - click the **"Use this template"** but
 - **Backend**: Express.js with TypeScript, middleware, error handling, and security best practices
 - **API Documentation**: Swagger/OpenAPI documentation with interactive UI
 - **Database Support**: Optional configurations for PostgreSQL, MongoDB, and Redis (can be enabled or ignored)
-- **Frontend**: Next.js 14 with App Router, Tailwind CSS, and modern React patterns
+- **Frontend**: Next.js 14 with App Router, Tailwind CSS, shadcn/ui components, and authentication system
 - **Shared Package**: Common types, utilities, and constants shared between frontend and backend
 - **Development Tools**: ESLint, Prettier, Husky, lint-staged, and Nodemon for hot reload
 - **Docker Support**: Multi-stage Dockerfiles for optimized production builds
@@ -48,9 +48,19 @@ webapp-template/
 │   ├── frontend/          # Next.js frontend
 │   │   ├── src/
 │   │   │   ├── app/       # Next.js App Router pages
+│   │   │   │   ├── auth/  # Authentication pages (login, register)
+│   │   │   │   ├── layout.tsx
+│   │   │   │   ├── page.tsx
+│   │   │   │   └── globals.css
 │   │   │   ├── components/ # React components
+│   │   │   │   ├── ui/    # shadcn/ui components
+│   │   │   │   └── auth/  # Authentication components
+│   │   │   ├── contexts/  # React contexts (AuthContext)
+│   │   │   ├── hooks/     # Custom React hooks
 │   │   │   ├── lib/       # Utilities and API client
-│   │   │   ├── hooks/     # React hooks
+│   │   │   │   ├── api.ts
+│   │   │   │   ├── utils.ts
+│   │   │   │   └── auth/  # Auth API functions
 │   │   │   └── types/     # TypeScript types
 │   │   └── package.json
 │   │
@@ -551,10 +561,23 @@ The `bearerAuth` security scheme is already configured in `swagger.ts`.
 ### Frontend Architecture
 
 - **App Router**: Next.js 14 App Router for routing
+  - Authentication pages (`/auth/login`, `/auth/register`)
+  - File-based routing
 - **Components**: Reusable React components
+  - UI components (shadcn/ui)
+  - Authentication components (forms, protected routes)
+- **Contexts**: React Context API for global state
+  - AuthContext for authentication state management
 - **Hooks**: Custom React hooks
 - **Lib**: API client and utilities
+  - Axios client with interceptors
+  - Auth API functions
+  - Utility functions
 - **Types**: TypeScript type definitions
+  - General types
+  - Auth-related types
+
+**See `Docs/FRONTEND_STRUCTURE.md` for detailed frontend folder structure and usage examples.**
 
 ### Shared Package
 

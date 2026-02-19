@@ -51,15 +51,27 @@ webapp-template/
 - TypeScript - Type safety
 - Tailwind CSS - Utility-first CSS framework
 - Axios - HTTP client
+- shadcn/ui - UI component library
+- React Hook Form + Zod - Form validation
 
 **Architecture Pattern:**
 
 - **App Router**: Next.js 14 file-based routing
+  - Authentication pages (`/auth/login`, `/auth/register`)
+  - Protected routes with wrapper components
 - **Components**: Reusable React components
+  - UI components (shadcn/ui)
+  - Authentication components (forms, protected routes)
+- **Contexts**: React Context API for global state
+  - AuthContext for authentication state management
 - **Hooks**: Custom React hooks
 - **Lib**: API client and utilities
+  - Axios client with interceptors
+  - Auth API functions
+  - Utility functions (cn helper for className merging)
 - **Types**: TypeScript type definitions
-- **Styles**: Global styles and Tailwind configuration
+  - General types
+  - Auth-related types
 
 **Key Features:**
 
@@ -68,6 +80,11 @@ webapp-template/
 - API route integration
 - Optimized production builds
 - Image optimization
+- Authentication system with context
+- Protected routes
+- Form validation with react-hook-form and zod
+
+**See `Docs/FRONTEND_STRUCTURE.md` for detailed frontend folder structure.**
 
 ### Shared (`packages/shared`)
 
