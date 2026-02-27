@@ -16,6 +16,7 @@ This is a **GitHub template repository** - click the **"Use this template"** but
 - **API Documentation**: Swagger/OpenAPI documentation with interactive UI
 - **Database Support**: Optional configurations for PostgreSQL, MongoDB, and Redis (can be enabled or ignored)
 - **Frontend**: Next.js 14 with App Router, Tailwind CSS, shadcn/ui components, and authentication system
+- **SEO**: Dynamic sitemap.xml and robots.txt for search engines
 - **Shared Package**: Common types, utilities, and constants shared between frontend and backend
 - **Development Tools**: ESLint, Prettier, Husky, lint-staged, and Nodemon for hot reload
 - **Docker Support**: Multi-stage Dockerfiles for optimized production builds
@@ -331,8 +332,11 @@ CORS_ORIGIN=http://localhost:3000
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:3001
+NEXT_PUBLIC_APP_URL=http://localhost:3000
 NODE_ENV=development
 ```
+
+- **NEXT_PUBLIC_APP_URL**: Your app’s public URL. Used for **sitemap.xml** and **robots.txt**. Set to your production URL (e.g. `https://yourdomain.com`) in production.
 
 #### Database Configuration (Optional)
 
@@ -421,6 +425,60 @@ REDIS_DB=0
    ```
 
 **Note:** If you don't need databases, simply leave the environment variables commented and ignore the database configuration files. The application will work perfectly without them.
+
+### SEO: Sitemap & Robots
+
+The frontend generates **sitemap.xml** and **robots.txt** for search engines using Next.js App Router metadata files.
+
+#### What they do
+
+| File            | URL            | Purpose                                                             |
+| --------------- | -------------- | ------------------------------------------------------------------- |
+| **sitemap.xml** | `/sitemap.xml` | Tells search engines which pages exist and how often they change.   |
+| **robots.txt**  | `/robots.txt`  | Tells crawlers which paths they are allowed or disallowed to index. |
+
+#### How they work
+
+- **`src/app/sitemap.ts`** – Exports a function that returns the list of URLs. Next.js serves it at `/sitemap.xml`.
+- **`src/app/robots.ts`** – Exports a function that returns rules and the sitemap URL. Next.js serves it at `/robots.txt`.
+
+Both use **NEXT_PUBLIC_APP_URL** for the base URL (e.g. `https://yourdomain.com` in production). If unset, they fall back to `http://localhost:3000`.
+
+#### What you need to do
+
+1. **Set the app URL in production**  
+   In your frontend `.env` (or hosting env vars), set:
+
+   ```env
+   NEXT_PUBLIC_APP_URL=https://yourdomain.com
+   ```
+
+   This ensures sitemap and robots use your real domain.
+
+2. **When you add new public pages**  
+   Edit `packages/frontend/src/app/sitemap.ts` and add an entry, for example:
+
+   ```ts
+   {
+     url: `${baseUrl}/your-new-page`,
+     lastModified: new Date(),
+     changeFrequency: 'weekly', // 'always' | 'hourly' | 'daily' | 'weekly' | 'monthly' | 'yearly' | 'never'
+     priority: 0.8,            // 0.0 to 1.0
+   },
+   ```
+
+3. **If you have private or admin routes**  
+   Edit `packages/frontend/src/app/robots.ts` and add paths to `disallow`, for example:
+   ```ts
+   disallow: ['/api/', '/admin/', '/dashboard/'],
+   ```
+
+#### Verifying
+
+- Local: `http://localhost:3000/sitemap.xml` and `http://localhost:3000/robots.txt`
+- Production: `https://yourdomain.com/sitemap.xml` and `https://yourdomain.com/robots.txt`
+
+Submit your sitemap in [Google Search Console](https://search.google.com/search-console) (Sitemaps section) after deployment.
 
 ### TypeScript Configuration
 
